@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f2">
+  <meta name="description" content="A unified everyday banking and crypto wealth dashboard demo.">
+  <title>Butterfield Banco — Money, in motion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#overview" aria-label="Butterfield Banco home">
+        <span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 23 16 5l11 18H5Zm5.4-4h11.2M16 5v18"/></svg></span>
+        <span class="brand-copy"><span>butterfield<span class="brand-dot">.</span></span><small>BANCO</small></span>
+      </a>
+      <p class="nav-label">YOUR MONEY</p>
+      <nav class="nav-list">
+        <a href="#overview" class="nav-link" data-page="overview"><span class="nav-icon">⌂</span>Overview</a>
+        <a href="#accounts" class="nav-link" data-page="accounts"><span class="nav-icon">▣</span>Accounts <span class="nav-count">4</span></a>
+        <a href="#cards" class="nav-link" data-page="cards"><span class="nav-icon">▰</span>Cards</a>
+        <a href="#payments" class="nav-link" data-page="payments"><span class="nav-icon">↗</span>Payments</a>
+        <a href="#activity" class="nav-link" data-page="activity"><span class="nav-icon">↕</span>Activity</a>
+      </nav>
+      <p class="nav-label nav-label-spaced">DIGITAL ASSETS</p>
+      <nav class="nav-list">
+        <a href="#crypto" class="nav-link" data-page="crypto"><span class="nav-icon crypto-nav">◈</span>Crypto <span class="nav-live"></span></a>
+        <a href="#earn" class="nav-link" data-page="earn"><span class="nav-icon">✳</span>Earn</a>
+        <a href="#analytics" class="nav-link" data-page="analytics"><span class="nav-icon">▥</span>Analytics</a>
+      </nav>
+      <p class="nav-label nav-label-spaced">ACCOUNT</p>
+      <nav class="nav-list">
+        <a href="#settings" class="nav-link" data-page="settings"><span class="nav-icon">⚙</span>Settings</a>
+        <a href="#support" class="nav-link" data-page="support"><span class="nav-icon">?</span>Help & support</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-promo"><span class="promo-kicker">ONE PORTFOLIO</span><strong>Traditional meets digital.</strong><p>See every dollar and satoshi in one place.</p><button class="text-action" data-action="learn">Explore the platform <span>↗</span></button></div>
+        <button class="profile-button" data-action="profile"><span class="avatar">JD</span><span class="profile-copy"><strong>Jordan Davis</strong><small>Personal account</small></span><span class="more">···</span></button>
+      </div>
+    </aside>
+
+    <section class="main-column">
+      <header class="topbar">
+        <button class="mobile-menu icon-button" data-action="menu" aria-label="Open navigation">☰</button>
+        <div class="breadcrumbs"><span>Personal</span><span class="slash">/</span><strong id="breadcrumb">Overview</strong></div>
+        <div class="topbar-actions">
+          <label class="search-box"><span>⌕</span><input id="global-search" type="search" placeholder="Search transactions, assets..." aria-label="Search transactions and assets"><kbd>⌘ K</kbd></label>
+          <button class="icon-button bell-button" data-action="notifications" aria-label="Notifications">♧<i></i></button>
+          <button class="top-avatar" data-action="profile" aria-label="Open profile">JD</button>
+        </div>
+      </header>
+      <main id="main-content" tabindex="-1"></main>
+      <footer class="footer"><span>© <span id="year"></span> Butterfield Banco</span><span><i class="secure-dot"></i> Demo environment · No real money or crypto moves</span></footer>
+    </section>
+  </div>
+  <div class="modal-backdrop" id="modal-backdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal-close icon-button" data-action="close-modal" aria-label="Close dialog">×</button>
+      <div id="modal-content"></div>
+    </section>
+  </div>
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
