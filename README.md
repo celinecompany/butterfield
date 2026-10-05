@@ -12,7 +12,7 @@ Open `index.html` in a modern browser. The app has no build step, framework, pac
 - `styles.css` — responsive visual system, charts, cards, tables, and modal styling
 - `app.js` — page rendering, filters, forms, demo actions, and local persistence
 - `data.js` — starter account, crypto, wallet, and transaction data
-- `statement.html`, `statement.css`, and `statement.js` — printable account statement, downloadable standalone HTML copy, and demo-data rendering
+- `statement.html`, `statement.css`, and `statement.js` — printable account statement, client-side PDF download, and demo-data rendering
 
 ## Included experiences
 
@@ -28,4 +28,4 @@ Open `index.html` in a modern browser. The app has no build step, framework, pac
 
 Bank linking accepts any institution name, while balances, market prices, transfers, card controls, wallet connections, and staking remain simulated. Profile, account, wallet, card, security, notification, and appearance preferences can be edited and are saved in this browser's local storage. Currency display uses approximate demo conversion rates. Do not enter real passwords, private keys, seed phrases, payment details, or sensitive information.
 
-Open an account statement from an account card, the dashboard, activity, or analytics. The statement reads the same local demo data as the platform. **Print** opens the browser print dialog, where you can also choose **Save as PDF**. **Download** saves a standalone HTML copy with its styling and statement contents embedded, so it can be opened locally without the app. No server-side renderer or external PDF library is required.
+Open an account statement from an account card, the dashboard, activity, or analytics. The statement reads the same local demo data as the platform. **Print** opens the browser print dialog, where you can also choose **Save as PDF**. **Download PDF** creates an A4 PDF in the browser using the html2pdf.js library loaded from cdnjs; an internet connection is needed to load the library. If it is unavailable, use Print and choose Save as PDF instead.

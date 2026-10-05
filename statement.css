@@ -30,6 +30,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .download-button, .print-button, .apply-button { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; gap: 9px; padding: 0 17px; border: 0; border-radius: 8px; background: var(--green); color: white; font-size: 12px; font-weight: 700; box-shadow: 0 6px 15px #174f3a1c; cursor: pointer; transition: transform .16s ease, background .16s ease; }
 .print-button { border: 1px solid #dfe7dd; background: #fff; color: #385540; box-shadow: none; }
 .download-button:hover, .apply-button:hover { transform: translateY(-1px); background: #103d2c; }
+.download-button:disabled { cursor: wait; opacity: .75; transform: none; }
 .print-button:hover { transform: translateY(-1px); background: #f5f8f2; }
 .download-button span { color: var(--lime); font-size: 18px; line-height: 1; }
 .print-button span { font-size: 18px; line-height: 1; }
@@ -41,6 +42,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .screen-hint strong { color: #526b58; }
 .screen-error { padding: 10px 12px; margin: 12px 0 0; border: 1px solid #efd3ce; border-radius: 7px; background: #fff8f6; color: #a14238; font-size: 11px; }
 .statement-sheet { position: relative; display: flex; width: min(210mm, 100%); min-height: 297mm; flex-direction: column; overflow: hidden; padding: 15mm 16mm 13mm; margin: 0 auto; background: var(--paper); box-shadow: 0 15px 45px #25352b12; }
+.pdf-export .sheet-header, .pdf-export .customer-period, .pdf-export .balance-summary, .pdf-export .ledger-heading, .pdf-export .sheet-footer, .pdf-export .legal-note, .pdf-export tr { break-inside: avoid; page-break-inside: avoid; }
+.pdf-export .table-wrap { overflow: visible; }
 .sheet-topline { display: flex; justify-content: space-between; padding-bottom: 9px; border-bottom: 1px solid var(--line); color: #88948b; font-size: 8px; font-weight: 700; letter-spacing: 1.25px; }
 .demo-stamp { padding: 4px 7px; border: 1px solid #e6ede1; border-radius: 20px; background: #f6f9f2; color: #637c55; font-size: 7px; letter-spacing: 1px; }
 .sheet-header { display: flex; min-height: 126px; align-items: center; justify-content: space-between; gap: 20px; padding: 23px 0 20px; border-bottom: 1px solid var(--line); }

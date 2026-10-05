@@ -60,6 +60,7 @@
   const dateText = (value, options = { day: "2-digit", month: "short", year: "numeric" }) =>
     new Intl.DateTimeFormat("en-US", options).format(value);
   const userName = [state.user?.first, state.user?.last].filter(Boolean).join(" ") || "Demo customer";
+  const downloadLabel = elements.download.querySelector(".download-label");
 
   function setError(message = "") {
     elements.error.textContent = message;
@@ -110,7 +111,6 @@
       setError("The statement start date must be on or before the end date.");
       return false;
     }
-
     setError();
     const endOfDay = new Date(end);
     endOfDay.setHours(23, 59, 59, 999);
@@ -175,61 +175,69 @@
     if (!updateStatement()) return;
     window.requestAnimationFrame(() => window.print());
   });
-  elements.download.addEventListener("click", () => {
+  elements.download.addEventListener("click", async () => {
     if (!updateStatement()) return;
-    const sheet = document.querySelector("#statement-sheet").cloneNode(true);
-    const logo = sheet.querySelector(".statement-logo");
-    if (logo && !logo.hidden && logo.complete && logo.naturalWidth) {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = logo.naturalWidth;
-        canvas.height = logo.naturalHeight;
-        canvas.getContext("2d").drawImage(logo, 0, 0);
-        logo.src = canvas.toDataURL("image/png");
-      } catch (error) {
-        console.warn("Could not embed the statement logo in the downloaded copy.", error);
-      }
-    }
-
-    let styles;
-    try {
-      const statementStylesheet = document.querySelector('link[rel="stylesheet"][href="statement.css"]')?.sheet;
-      if (!statementStylesheet) throw new Error("Statement stylesheet is unavailable.");
-      styles = Array.from(statementStylesheet.cssRules).map((rule) => rule.cssText).join("\n");
-    } catch (error) {
-      setError("The statement styles could not be prepared for download. Please reload and try again.");
-      console.error("Could not prepare statement styles for download.", error);
+    if (typeof window.html2pdf !== "function") {
+      setError("PDF download is unavailable. Check your internet connection and reload, or use Print and choose Save as PDF.");
       return;
     }
 
-    const accountName = document.querySelector("#account-name").textContent;
     const accountSlug = elements.accountSelect.value;
     const filename = accountSlug
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "") || "account";
-    const html = `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Saved Butterfield Banco account statement copy.">
-  <title>${safe(accountName)} Statement · Butterfield Banco</title>
-  <style>${styles}</style>
-</head>
-<body>
-  <main class="statement-app">${sheet.outerHTML}</main>
-</body>
-</html>`;
-    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `butterfield-banco-${filename}-statement-${elements.start.value}-to-${elements.end.value}.html`;
-    document.body.append(link);
-    link.click();
-    link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setError();
+    const sheet = document.querySelector("#statement-sheet").cloneNode(true);
+    sheet.classList.add("pdf-export");
+    const logo = sheet.querySelector(".statement-logo");
+    if (logo) {
+      if (logo.hidden || !logo.complete || !logo.naturalWidth) {
+        logo.remove();
+      } else {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = logo.naturalWidth;
+          canvas.height = logo.naturalHeight;
+          canvas.getContext("2d").drawImage(logo, 0, 0);
+          logo.src = canvas.toDataURL("image/png");
+        } catch (error) {
+          console.warn("Could not embed the statement logo in the PDF.", error);
+          logo.remove();
+        }
+      }
+    }
+    elements.download.disabled = true;
+    elements.download.setAttribute("aria-busy", "true");
+    downloadLabel.textContent = "Preparing PDF…";
+    try {
+      await document.fonts.ready;
+      const pdf = await window.html2pdf().set({
+        margin: 0,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { backgroundColor: "#ffffff", scale: 2, useCORS: true, windowWidth: 794, logging: false },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"] }
+      }).from(sheet).outputPdf("blob");
+      if (!(pdf instanceof Blob) || pdf.size < 5 || pdf.type !== "application/pdf") {
+        throw new Error("The PDF renderer returned an invalid file.");
+      }
+      const url = URL.createObjectURL(pdf);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `butterfield-banco-${filename}-statement-${elements.start.value}-to-${elements.end.value}.pdf`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (error) {
+      setError("The PDF could not be created. Please try again, or use Print and choose Save as PDF.");
+      console.error("Could not create the account statement PDF.", error);
+    } finally {
+      downloadLabel.textContent = "Download PDF";
+      elements.download.removeAttribute("aria-busy");
+      elements.download.disabled = false;
+    }
   });
   document.querySelector(".statement-logo").addEventListener("error", (event) => {
     event.currentTarget.hidden = true;

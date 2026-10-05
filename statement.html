@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Allura&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="statement.css">
   <script src="data.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
   <script src="statement.js" defer></script>
 </head>
 <body>
@@ -21,11 +22,11 @@
         <div>
           <p class="eyebrow">YOUR FINANCIAL PAPERWORK</p>
           <h1>Account statement</h1>
-          <p>Review a clear record of your demo account activity.</p>
+          <p>Review a clear record of your account activity.</p>
         </div>
         <div class="statement-actions">
           <button class="print-button" id="print-statement" type="button"><span aria-hidden="true">⎙</span> Print</button>
-          <button class="download-button" id="download-statement" type="button"><span aria-hidden="true">↓</span> Download</button>
+          <button class="download-button" id="download-statement" type="button"><span aria-hidden="true">↓</span> <span class="download-label">Download PDF</span></button>
         </div>
       </div>
       <form class="statement-filters" id="statement-filters">
@@ -40,7 +41,7 @@
         </label>
         <button class="apply-button" type="submit">Update statement</button>
       </form>
-      <p class="screen-hint">Print a paper copy, or download a standalone HTML copy to save and open on this device.</p>
+      <p class="screen-hint">Print a paper copy, or download this statement as a PDF.</p>
       <p class="screen-error" id="statement-error" role="alert" hidden></p>
     </header>
 
@@ -100,7 +101,7 @@
             <span class="signature-script">Butterfield Banco</span>
             <span class="signature-rule"></span>
             <strong>Authorized Signature</strong>
-            <small>Butterfield Banco · Demonstration only</small>
+            <small>Butterfield Banco ·</small>
           </div>
           <div class="footer-seal" aria-hidden="true"><span>BB</span><small>TRUST<br>IN MOTION</small></div>
         </footer>
