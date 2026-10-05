@@ -188,34 +188,34 @@
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "") || "account";
     setError();
+    const sourceLogo = document.querySelector(".statement-logo");
     const sheet = document.querySelector("#statement-sheet").cloneNode(true);
     sheet.classList.add("pdf-export");
     const logo = sheet.querySelector(".statement-logo");
-    if (logo) {
-      if (logo.hidden || !logo.complete || !logo.naturalWidth) {
-        logo.remove();
-      } else {
-        try {
-          const canvas = document.createElement("canvas");
-          canvas.width = logo.naturalWidth;
-          canvas.height = logo.naturalHeight;
-          canvas.getContext("2d").drawImage(logo, 0, 0);
-          logo.src = canvas.toDataURL("image/png");
-        } catch (error) {
-          console.warn("Could not embed the statement logo in the PDF.", error);
-          logo.remove();
-        }
-      }
-    }
     elements.download.disabled = true;
     elements.download.setAttribute("aria-busy", "true");
     downloadLabel.textContent = "Preparing PDF…";
     try {
-      await document.fonts.ready;
+      await Promise.all([document.fonts.ready, new Promise((resolve, reject) => {
+        if (sourceLogo.complete) {
+          resolve();
+          return;
+        }
+        sourceLogo.addEventListener("load", resolve, { once: true });
+        sourceLogo.addEventListener("error", () => reject(new Error("Could not load the statement logo.")), { once: true });
+      })]);
+      if (!sourceLogo.naturalWidth) throw new Error("The statement logo image is empty.");
+      const canvas = document.createElement("canvas");
+      canvas.width = sourceLogo.naturalWidth;
+      canvas.height = sourceLogo.naturalHeight;
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Could not create a canvas to embed the statement logo.");
+      context.drawImage(sourceLogo, 0, 0);
+      logo.src = canvas.toDataURL("image/png");
       const pdf = await window.html2pdf().set({
         margin: 0,
         image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { backgroundColor: "#ffffff", scale: 2, useCORS: true, windowWidth: 794, logging: false },
+        html2canvas: { backgroundColor: "#ffffff", scale: 2, useCORS: true, width: 794, windowWidth: 794, scrollX: 0, scrollY: 0, x: 0, logging: false },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         pagebreak: { mode: ["css", "legacy"] }
       }).from(sheet).outputPdf("blob");
@@ -238,12 +238,6 @@
       elements.download.removeAttribute("aria-busy");
       elements.download.disabled = false;
     }
-  });
-  document.querySelector(".statement-logo").addEventListener("error", (event) => {
-    event.currentTarget.hidden = true;
-  });
-  document.querySelector(".statement-logo").addEventListener("load", (event) => {
-    event.currentTarget.hidden = false;
   });
   document.querySelector("#current-year").textContent = String(new Date().getFullYear());
 
