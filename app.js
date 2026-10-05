@@ -124,6 +124,7 @@
       <h3>${safe(account.name)}</h3><p>${safe(account.institution)} ···· ${safe(account.mask)}</p>
       <div class="account-balance">${hiddenMoney(account.balance)}</div>
       <div class="account-actions"><span>${compact ? "Available balance" : "Available to spend"}</span><button class="text-button" data-action="account-menu" data-account="${safe(account.id)}">Manage ···</button></div>
+      <div class="account-statement-link"><a class="text-button" href="statement.html?account=${encodeURIComponent(account.id)}">View account statement ↗</a></div>
     </article>`).join("");
   }
 
@@ -159,7 +160,7 @@
     const tx = state.transactions.slice(0, 5);
     const cashPercent = total ? cash / total * 100 : 0;
     return `<div class="page-wrap">
-      ${pageHeader(new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric" }).format(new Date()).toUpperCase(), `Good morning, ${safe(state.user.first)} <span aria-hidden="true">✳</span>`, "Your whole financial life, working together.", '<button class="button button-light" data-action="export">⇩ Export</button><button class="button button-primary" data-action="transfer">↗ Send money</button>')}
+      ${pageHeader(new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric" }).format(new Date()).toUpperCase(), `Good morning, ${safe(state.user.first)} <span aria-hidden="true">✳</span>`, "Your whole financial life, working together.", '<button class="button button-light" data-action="statement">⇩ PDF statement</button><button class="button button-primary" data-action="transfer">↗ Send money</button>')}
       <section class="portfolio-banner">
         <div class="portfolio-main"><div class="banner-topline">TOTAL PORTFOLIO <span class="live-pill"><i></i> LIVE DEMO</span></div>
           <div class="portfolio-title"><h1>${hiddenMoney(total)}</h1><button class="visibility-toggle" data-action="toggle-balance" aria-label="Toggle balance visibility">${state.hiddenBalance ? "◉" : "◎"}</button></div>
@@ -255,7 +256,7 @@
     const pagesCount = Math.max(1, Math.ceil(filtered.length / state.pageSize));
     state.transactionPage = Math.min(state.transactionPage, pagesCount);
     const visible = filtered.slice((state.transactionPage - 1) * state.pageSize, state.transactionPage * state.pageSize);
-    return `<div class="page-wrap">${pageHeader("EVERYTHING, IN ONE LEDGER", "Activity", "Search and explore every bank transaction and crypto movement.", '<button class="button button-light" data-action="export">⇩ Export CSV</button>')}
+    return `<div class="page-wrap">${pageHeader("EVERYTHING, IN ONE LEDGER", "Activity", "Search and explore every bank transaction and crypto movement.", '<button class="button button-light" data-action="statement" data-account="${safe(state.accountFilter || state.accounts[0]?.id || "")}">⇩ PDF statement</button>')}
       <section class="panel"><div class="section-toolbar"><div class="filter-tabs">${["All", "Income", "Expenses"].map((value) => `<button data-activity-kind="${value}" class="${kind === value ? "selected" : ""}">${value}</button>`).join("")}</div>
         <div class="toolbar-group"><select class="field-control" id="type-filter" aria-label="Filter by account type"><option ${type === "All" ? "selected" : ""}>All</option><option ${type === "Bank" ? "selected" : ""}>Bank</option><option ${type === "Crypto" ? "selected" : ""}>Crypto</option></select>
         <select class="field-control" id="account-filter" aria-label="Filter by account"><option value="All">All accounts</option>${state.accounts.map((account) => `<option value="${safe(account.id)}" ${state.accountFilter === account.id ? "selected" : ""}>${safe(account.name)}</option>`).join("")}${state.assets.map((asset) => `<option value="${safe(asset.id)}" ${state.accountFilter === asset.id ? "selected" : ""}>${safe(asset.name)} wallet</option>`).join("")}</select></div></div>
@@ -302,7 +303,7 @@
     const categories = ["Groceries", "Travel", "Subscriptions", "Transport"].map((name) => ({
       name, value: Math.abs(state.transactions.filter((item) => item.category === name && item.amount < 0).reduce((sum, item) => sum + item.amount, 0))
     })).filter((item) => item.value > 0);
-    return `<div class="page-wrap">${pageHeader("THE BIGGER PICTURE", "Analytics", "See your bank cash flow and crypto portfolio side by side.", '<button class="button button-light" data-action="export">⇩ Export report</button>')}
+    return `<div class="page-wrap">${pageHeader("THE BIGGER PICTURE", "Analytics", "See your bank cash flow and crypto portfolio side by side.", '<button class="button button-light" data-action="statement">⇩ PDF statement</button>')}
       <section class="stat-grid"><article class="card stat-card"><div class="stat-label">TOTAL INCOME <span class="stat-glyph">↙</span></div><div class="stat-value">${hiddenMoney(income)}</div><div class="stat-foot">Across bank and crypto rewards</div></article><article class="card stat-card"><div class="stat-label">TOTAL OUTFLOW <span class="stat-glyph blue">↗</span></div><div class="stat-value">${hiddenMoney(outflow)}</div><div class="stat-foot">Purchases and crypto buys</div></article><article class="card stat-card"><div class="stat-label">SAVINGS RATE <span class="stat-glyph purple">◌</span></div><div class="stat-value">32.6%</div><div class="stat-foot"><span class="trend-up">↗ 4.4%</span> vs. last month</div></article></section>
       <section class="analytics-grid"><article class="panel"><div class="panel-heading"><div><h2>Net worth history</h2><p>One combined view across your accounts</p></div><span class="account-type">USD</span></div><div class="chart-value">${hiddenMoney(netWorth())} <span>↗ 8.4%</span></div><div class="chart-caption">Combined portfolio value</div>${chartSVG()}<div class="chart-bottom"><div class="chart-xlabels">${periodLabels().map((label) => `<span>${label}</span>`).join("")}</div><div class="periods">${["1W", "1M", "1Y", "ALL"].map((period) => `<button class="${state.period === period ? "selected" : ""}" data-period="${period}">${period}</button>`).join("")}</div></div></article>
         <article class="panel"><div class="panel-heading"><div><h2>Spending by category</h2><p>Bank and card outflows</p></div></div><div class="category-list">${categories.length ? categories.map((item) => `<div class="category-line"><span class="category-label"><i></i>${safe(item.name)}</span><span class="category-amount">${hiddenMoney(item.value)}</span><span class="category-bar"><span style="width:${Math.max(8, item.value / Math.max(...categories.map((part) => part.value)) * 100)}%"></span></span></div>`).join("") : `<div class="empty-state">No outgoing transactions yet.</div>`}</div><div class="insight-card"><strong>A balanced financial picture</strong><p>Your dashboard brings cash and digital assets together. Use activity filters to see each side of your portfolio in detail.</p></div></article>
@@ -656,7 +657,13 @@
       state.cardControls[control] = !state.cardControls[control];
       persist(); render(); toast(`${control} card payments ${state.cardControls[control] ? "enabled" : "disabled"}.`); return;
     }
-    if (action === "export") { exportTransactions(); return; }
+    if (action === "statement") {
+      const requestedAccount = target.dataset.account;
+      const account = accountFor(requestedAccount) || state.accounts[0];
+      if (!account) { toast("Add a bank account before creating a statement."); return; }
+      window.location.href = `statement.html?account=${encodeURIComponent(account.id)}`;
+      return;
+    }
     if (action === "page") { state.transactionPage = Number(target.dataset.pageNumber); render(); return; }
     if (action === "auth-toggle") { state.page = state.page === "signup" ? "signin" : "signup"; render(); return; }
     if (action === "signout") { state.page = "signin"; history.pushState(null, "", "#signin"); render(); toast("Signed out of the local demo."); return; }
@@ -695,25 +702,6 @@
       document.querySelectorAll(".faq-item").forEach((item) => { item.hidden = !item.dataset.question.includes(query); });
     }
   });
-
-  function exportTransactions() {
-    const rows = [["Date", "Description", "Category", "Type", "Account / asset", "Amount USD", "Status"]];
-    state.transactions.forEach((item) => {
-      const detail = item.kind === "crypto" ? (assetForSymbolById(item.account)?.name || "Crypto wallet") : (accountFor(item.account)?.name || "Bank account");
-      rows.push([new Date(item.date).toISOString(), item.name, item.category, item.kind, detail, item.amount.toFixed(2), item.status]);
-    });
-    const csv = rows.map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")).join("\r\n");
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-    link.download = "butterfield-banco-activity.csv";
-    link.click();
-    URL.revokeObjectURL(link.href);
-    toast("Your combined activity statement has been exported.");
-  }
-
-  function assetForSymbolById(id) {
-    return state.assets.find((asset) => asset.id === id);
-  }
 
   document.addEventListener("keydown", (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); document.querySelector("#global-search").focus(); }

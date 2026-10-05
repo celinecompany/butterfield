@@ -217,6 +217,7 @@ h1 { margin-bottom: 6px; color: #1a2920; font: 700 25px/1.2 "Manrope", sans-seri
 .account-card p { position: relative; z-index: 1; margin: 0; color: #8b978e; font-size: 8px; }
 .account-card .account-balance { position: relative; z-index: 1; margin-top: 16px; font: 700 19px "Manrope", sans-serif; }
 .account-card .account-actions { position: relative; z-index: 1; display: flex; justify-content: space-between; margin-top: 11px; color: #8a958c; font-size: 8px; }
+.account-card .account-statement-link { position: relative; z-index: 1; padding-top: 9px; margin-top: 9px; border-top: 1px solid #edf0eb; text-align: right; }
 .crypto-layout { display: grid; grid-template-columns: minmax(0, 1fr) 285px; gap: 14px; }
 .market-table { display: grid; }
 .market-head, .market-row { display: grid; grid-template-columns: minmax(155px, 1.4fr) repeat(3, minmax(75px, .8fr)) 75px; align-items: center; gap: 10px; }

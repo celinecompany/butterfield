@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f2">
+  <meta name="description" content="View and print a Butterfield Banco demo account statement.">
+  <title>Account Statement · Butterfield Banco</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Allura&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="statement.css">
+  <script src="data.js" defer></script>
+  <script src="statement.js" defer></script>
+</head>
+<body>
+  <div class="statement-app">
+    <header class="screen-header">
+      <a class="back-link" href="index.html#accounts"><span aria-hidden="true">←</span> Back to Butterfield Banco</a>
+      <div class="screen-intro">
+        <div>
+          <p class="eyebrow">YOUR FINANCIAL PAPERWORK</p>
+          <h1>Account statement</h1>
+          <p>Review a clear record of your demo account activity.</p>
+        </div>
+        <div class="statement-actions">
+          <button class="print-button" id="print-statement" type="button"><span aria-hidden="true">⎙</span> Print</button>
+          <button class="download-button" id="download-statement" type="button"><span aria-hidden="true">↓</span> Download</button>
+        </div>
+      </div>
+      <form class="statement-filters" id="statement-filters">
+        <label>Account
+          <select id="account-select" aria-label="Choose an account"></select>
+        </label>
+        <label>From
+          <input id="period-start" type="date" required>
+        </label>
+        <label>To
+          <input id="period-end" type="date" required>
+        </label>
+        <button class="apply-button" type="submit">Update statement</button>
+      </form>
+      <p class="screen-hint">Print a paper copy, or download a standalone HTML copy to save and open on this device.</p>
+      <p class="screen-error" id="statement-error" role="alert" hidden></p>
+    </header>
+
+    <main>
+      <article class="statement-sheet" id="statement-sheet" aria-label="Account statement">
+        <div class="sheet-topline"><span>PERSONAL BANKING</span><span class="demo-stamp">DOCUMENT</span></div>
+        <header class="sheet-header">
+          <div class="bank-identity">
+            <span class="logo-slot"><img class="statement-logo" src="logo.png" alt="" hidden></span>
+            <span class="bank-name">butterfield<span>.</span><small>BANCO</small></span>
+          </div>
+          <div class="sheet-title">
+            <p>ACCOUNT RECORD</p>
+            <h2>ACCOUNT<br>STATEMENT</h2>
+          </div>
+        </header>
+
+        <section class="customer-period">
+          <div class="customer-block">
+            <span class="section-kicker">PREPARED FOR</span>
+            <strong id="customer-name"></strong>
+            <span id="account-name"></span>
+            <span id="account-number"></span>
+            <span id="customer-contact"></span>
+          </div>
+          <div class="period-block">
+            <span class="section-kicker">STATEMENT PERIOD</span>
+            <strong id="statement-period"></strong>
+            <span id="generated-date"></span>
+          </div>
+        </section>
+
+        <section class="balance-summary" aria-label="Statement totals">
+          <div><span>Opening balance</span><strong id="opening-balance"></strong></div>
+          <div><span>Total credits</span><strong id="total-credits" class="credit"></strong></div>
+          <div><span>Total debits</span><strong id="total-debits" class="debit"></strong></div>
+          <div class="closing-balance"><span>Closing balance</span><strong id="closing-balance"></strong></div>
+        </section>
+
+        <section class="ledger-section">
+          <div class="ledger-heading">
+            <div><span class="section-kicker">YOUR ACCOUNT ACTIVITY</span><h3>Transactions</h3></div>
+            <span class="transaction-count" id="transaction-count"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th scope="col">Date</th><th scope="col">Description</th><th scope="col" class="numeric">Debit</th><th scope="col" class="numeric">Credit</th><th scope="col" class="numeric">Balance</th></tr>
+              </thead>
+              <tbody id="transaction-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <footer class="sheet-footer">
+          <div class="signature">
+            <span class="signature-script">Butterfield Banco</span>
+            <span class="signature-rule"></span>
+            <strong>Authorized Signature</strong>
+            <small>Butterfield Banco · Demonstration only</small>
+          </div>
+          <div class="footer-seal" aria-hidden="true"><span>BB</span><small>TRUST<br>IN MOTION</small></div>
+        </footer>
+        <div class="legal-note">This is an account statement . It is a bank-issued document and is valid for financial, identity, or legal verification.</div>
+      </article>
+    </main>
+    <footer class="screen-footer">© <span id="current-year"></span> Butterfield Banco <span>·</span> Legal environment · Real money moves</footer>
+  </div>
+</body>
+</html>
